@@ -12,8 +12,11 @@ $fileContent = Get-Content $NuspecPath | Out-String
 
 $nuspecVersionPattern = '(\<version\>)(\d+\.\d+\.\d+(\.\d)?)(\<\/version\>)'
 
+$buildVersionPattern = '([^\s]+)_(\d+)'
+$currentBuildStr = [RegEx]::Match($Build, $buildVersionPattern).Groups[2].Value
+
 $currentVersionStr = [RegEx]::Match($fileContent, $nuspecVersionPattern).Groups[2].Value
-$newVersionStr = $currentVersionStr + "." + $Build
+$newVersionStr = $currentVersionStr + "." + $currentBuildStr
 
 $fileContent = [RegEx]::Replace($fileContent, $nuspecVersionPattern, '${1}' + $newVersionStr + '${4}' )
 
