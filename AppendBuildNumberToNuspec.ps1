@@ -2,7 +2,9 @@ Param (
     [Parameter(Mandatory=$true)]
     [string] $NuspecPath,
     [Parameter(Mandatory=$true)]
-    [string] $Build
+    [string] $Build,
+    [Parameter(Mandatory=$false)]
+    [string] $BuildSufix
 )
 
 #$ErrorActionPreference = 'Stop'  # Stops executing on error instead of silent continue.
@@ -18,8 +20,14 @@ if(!$currentBuildStr)
     $currentBuildStr = $Build
 }
 
+if($BuildSufix)
+{
+    $currentBuildStr = $currentBuildStr + "-" + $BuildSufix
+}
+
 $currentVersionStr = [RegEx]::Match($fileContent, $nuspecVersionPattern).Groups[2].Value
 $newVersionStr = $currentVersionStr + "." + $currentBuildStr
+
 $fileContent = [RegEx]::Replace($fileContent, $nuspecVersionPattern, '${1}' + $newVersionStr + '${4}' )
 
 $dependencyVersionPattern = '(\<dependency id="[^\s]+" version=")('+$currentVersionStr+')("\s?\/>)'
